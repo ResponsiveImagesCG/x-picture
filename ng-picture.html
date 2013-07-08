@@ -1,0 +1,63 @@
+<element name="ng-picture" attributes="src srcset title alt">
+  <template>
+    <style>
+      img { max-width: 100%; }
+    </style>
+    <content select="source"></content>
+    <img src="{{ src }}" id="the" />
+  </template>
+  <script>
+    var src;
+    Polymer.register(this, {
+      ready: function () {
+        var sources = this.getElementsByTagName('source'), img = this.$.the,
+        findMatchedMedia, getDensity, getSrcFromElement;
+
+        getSrcFromElement = function (el) {
+          var deviceRatio, src, srcs, srcset;
+          if (el) {
+            // src wins if it eixists
+            if (el.src) {
+              return el.src;
+            } else if (srcset = el.getAttribute('srcset')) {
+              
+              // next prefer srcset, parsed for pixel density
+              deviceRatio = parseInt(window.devicePixelRatio, 10) || 1;
+              srcs = srcset.replace(/^\s*|\s*$/g, '').split(',');
+              for (var i = srcs.length - 1; i >= 0; i--) {
+                src = srcs[i].split(' ');
+
+                if (src[1].match(deviceRatio + 'x')) {
+                  return src[0];
+                }
+              }
+            }
+          } else {
+
+            // If there is no src or srcset on the element, no vaild url can exist
+            return '';
+          }
+        };
+        
+        findMatchedMedia = function () {
+          var source, i, len, media;
+          for (i = 0, len = sources.length; i < len; i++ ) {
+            
+            source = sources[i];
+            media = source.getAttribute('media');
+            
+            if (!media || (window.matchMedia && window.matchMedia(media).matches)) {
+              
+              return source;
+            }
+          }
+        };
+        this.src = getSrcFromElement(findMatchedMedia());
+        window.addEventListener('resize', function (e) {
+          img.src = getSrcFromElement(findMatchedMedia());
+          console.log(this.src);
+        });
+      }
+    });
+  </script>
+</element>
