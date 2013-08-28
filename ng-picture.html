@@ -10,11 +10,12 @@
     var src;
     Polymer.register(this, {
       ready: function () {
-        var sources = this.getElementsByTagName('source'), img = this.$.the,
-        findMatchedMedia, getDensity, getSrcFromElement;
+        var sources, img, findMatchedMedia, getDensity, getSrcFromElement;
 
+        sources = this.getElementsByTagName('source');
+        img = this.$.the;
         getSrcFromElement = function (el) {
-          var deviceRatio, src, srcs, srcset;
+          var deviceRatio, src, srcs, srcset, imgDPR, min = 1, max = 1;
           if (el) {
             // src wins if it eixists
             if (el.src) {
@@ -22,14 +23,41 @@
             } else if (srcset = el.getAttribute('srcset')) {
               
               // next prefer srcset, parsed for pixel density
+
+              //if window.devicePixelRatio is undefined assume dpr === 1
+              // When defined, win.dpr is always a number, therefore 
+              // it can be parsed as an int. 
+              // If it is < 1 (it never is) it should be treated as 1.
+              // If it is a float, it will be floored. 
+              // If it is higher than the highest defined srcset, it will use
+              // the highest defined srcset.
               deviceRatio = parseInt(window.devicePixelRatio, 10) || 1;
               srcs = srcset.replace(/^\s*|\s*$/g, '').split(',');
               for (var i = srcs.length - 1; i >= 0; i--) {
                 src = srcs[i].split(' ');
 
+                // return if we have an exact match
                 if (src[1].match(deviceRatio + 'x')) {
                   return src[0];
                 }
+
+                // Prep for edge cases.
+                imgDPR = (src[1]) ? parseInt(src[1].replace('x', ''), 10): 1;
+
+                if (imgDPR > max) {
+                  max = [src[0], imgDPR];
+                }
+                if (imgDPR < min) {
+                  min = [src[0], imgDPR];
+                }  
+                
+              }
+              
+              // Edge case when dpr is out of range supplied in srcset.
+              if (deviceRatio > max[1]) {
+                return max[0];
+              } else if (deviceRatio < min[1]) {
+                return min[0];
               }
             }
           } else {
@@ -40,22 +68,34 @@
         };
         
         findMatchedMedia = function () {
-          var source, i, len, media;
-          for (i = 0, len = sources.length; i < len; i++ ) {
-            
+          var source, i, len, media, mediaLess;
+
+          /*
+           * So the question is do we want the first matched media vis-a-vis <video>,
+           * or the last match vis-a-vis CSS. I feel like the use of <picture> is more
+           * akin in spirit to CSS than <video>. So to encourage a mobile first approach
+           * have similar behavior to CSS media query behavior, the last match wins. 
+           */
+
+          // Backwards to return as early as possible on last source order match.
+          for (i = sources.length-1; i >= 0; i-- ) {
             source = sources[i];
             media = source.getAttribute('media');
-            
-            if (!media || (window.matchMedia && window.matchMedia(media).matches)) {
-              
-              return source;
-            }
+              if (window.matchMedia && window.matchMedia(media).matches) {
+                console.log(media);
+                return source;
+              } else if (!media) {
+                // If no media matches, then the last source with no media attr wins,
+                // We can't break as there may be a media match up stream which always
+                // wins over no media so don't overwrite the first medialess source.
+                mediaLess = mediaLess || source;
+              }
           }
+          return mediaLess
         };
-        this.src = getSrcFromElement(findMatchedMedia());
+        img.src = getSrcFromElement(findMatchedMedia());
         window.addEventListener('resize', function (e) {
           img.src = getSrcFromElement(findMatchedMedia());
-          console.log(this.src);
         });
       }
     });
