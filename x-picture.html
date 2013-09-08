@@ -1,4 +1,4 @@
-<element name="ng-picture" attributes="src srcset title alt">
+<element name="x-picture" attributes="src srcset title alt">
   <template>
     <style>
       img { max-width: 100%; }
@@ -21,7 +21,6 @@
             if (el.src) {
               return el.src;
             } else if (srcset = el.getAttribute('srcset')) {
-              
               // next prefer srcset, parsed for pixel density
 
               //if window.devicePixelRatio is undefined assume dpr === 1
@@ -34,7 +33,7 @@
               deviceRatio = parseInt(window.devicePixelRatio, 10) || 1;
               srcs = srcset.replace(/^\s*|\s*$/g, '').split(',');
               for (var i = srcs.length - 1; i >= 0; i--) {
-                src = srcs[i].split(' ');
+                src = srcs[i].replace(/^\s*|\s*$/g, '').split(' ');
 
                 // return if we have an exact match
                 if (src[1].match(deviceRatio + 'x')) {
@@ -82,7 +81,6 @@
             source = sources[i];
             media = source.getAttribute('media');
               if (window.matchMedia && window.matchMedia(media).matches) {
-                console.log(media);
                 return source;
               } else if (!media) {
                 // If no media matches, then the last source with no media attr wins,
