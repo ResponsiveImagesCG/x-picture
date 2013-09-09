@@ -3,6 +3,6 @@
   "version": "0.0.0",
   "dependencies": {
     "polymer": "latest",
-    "polymer-all": "git://github.com/Polymer/polymer-all.git"
+    "highlightjs": "~7.3.0"
   }
 }
