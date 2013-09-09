@@ -7,6 +7,8 @@
         <meta name="description" content="x-picture: A <picture> polyfill">
         <meta name="viewport" content="width=device-width">
 
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/normalize.min.css">
         <link rel="stylesheet" href="js/vendor/highlightjs/styles/github.css">
 
         <script src="js/vendor/highlightjs/highlight.pack.js"></script>
@@ -25,11 +27,16 @@
 
         <p>x-picture has only one external dependency, <a href="http://www.polymer-project.org/">Polymer</a>.</p>
         <p>To use x-picture, simply include the Polymer library and a <code>&lt;link rel="import" href="path/to/x-picture.html" /&gt;</code> where <code>path/to/x-picture.html</code> is replaced with the actual path to x-picture.html.</p>
+
+        <pre><code>
+    &lt;script src="path/to/polymer/polymer.min.js"&gt;&lt;/script&gt;
+    &lt;link rel="import" href="path/to/x-picture.html" /&gt;
+        </code></pre>
+
         <p>From there, use <code>&lt;x-picture&gt;</code> the same way you would <code>&lt;picture&gt;</code></p>
         
         <pre><code>
     &lt;x-picture&gt;
-        &lt;h1&gt;Nothing to see here.&lt;/h1&gt;
         &lt;source srcset="http://www.fillmurray.com/300/600 1x, 
                         http://www.fillmurray.com/600/1200 2x" /&gt;
         &lt;source srcset="http://www.fillmurray.com/400/600 1x, 
@@ -44,13 +51,14 @@
         &lt;source srcset="http://www.fillmurray.com/700/600 1x, 
                         http://www.fillmurray.com/1400/1200 2x" 
                         media="(min-width:700px)" /&gt;
+        &lt;p&gt;Content to show if polymer fails.&lt;/p&gt;
+
     &lt;/x-picture&gt;
         </code></pre>
 
 
         <figure>
             <x-picture>
-                <h1>Nothing to see here.</h1>
                 <source srcset="http://www.fillmurray.com/300/600 1x, 
                                 http://www.fillmurray.com/600/1200 2x" />
                 <source srcset="http://www.fillmurray.com/400/600 1x, 
@@ -61,11 +69,15 @@
                                 http://www.fillmurray.com/1200/1200 2x" media="(min-width:600px)" />
                 <source srcset="http://www.fillmurray.com/700/600 1x, 
                                 http://www.fillmurray.com/1400/1200 2x" media="(min-width:700px)" />
+
+                <p>Content to show if polymer fails.</p>
             </x-picture>
             <figcaption>
                 <p><strong>Fill Murray</strong>: The internet was missing the ability to provide custom-sized placeholder images of Bill Murray. Now it can.</p>
             </figcaption>
         </figure>
+
+        <p><code>&lt;source&gt;s</code> are source order dependent with the last match winning. This follows the cascading nature of CSS and is to encourage a mobile (content) first approach.</p>
 
     </body>
 </html>
