@@ -5,10 +5,13 @@
     title: '',
     alt: '',
     created: function () {
-        var sources, img, findMatchedMedia, getDensity, getSrcFromElement;
+        var sources, img, findMatchedMedia, getDensity, getSrcFromElement, xPicture;
 
         sources = this.getElementsByTagName('source');
         img = this.$.the;
+
+        // Retain a reference.
+        xPicture = this;
         getSrcFromElement = function (el) {
             var deviceRatio, src, srcs, srcset, imgDPR, min = 1, max = 1;
             if (el) {
@@ -20,13 +23,15 @@
                 } else if (srcset = el.getAttribute('srcset')) {
                     // next prefer srcset, parsed for pixel density
 
-                    //if window.devicePixelRatio is undefined assume dpr === 1
-                    // When defined, win.dpr is always a number, therefore 
-                    // it can be parsed as an int. 
-                    // If it is < 1 (it never is) it should be treated as 1.
-                    // If it is a float, it will be floored. 
-                    // If it is higher than the highest defined srcset, it will use
-                    // the highest defined srcset.
+                    /*
+                     * if window.devicePixelRatio is undefined assume dpr === 1
+                     * When defined, win.dpr is always a number, therefore
+                     * it can be parsed as an int.
+                     * If it is < 1 (it never is) it should be treated as 1.
+                     * If it is a float, it will be floored.
+                     * If it is higher than the highest defined srcset, it will use
+                     * the highest defined srcset.
+                     */
                     deviceRatio = parseInt(window.devicePixelRatio, 10) || 1;
                     srcs = srcset.replace(/^\s*|\s*$/g, '').split(',');
                     for (var i = srcs.length - 1; i >= 0; i--) {
@@ -66,6 +71,11 @@
         findMatchedMedia = function () {
             var source, i, len, media, mediaLess;
 
+            // Check for media on the x-picture element itself first.
+            if (window.matchMedia && window.matchMedia(xPicture.media).matches) {
+                return xPicture;
+            }
+
             /*
              * So the question is do we want the first matched media vis-a-vis <video>,
              * or the last match vis-a-vis CSS. I feel like the use of <picture> is more
@@ -89,6 +99,7 @@
             return mediaLess;
         };
         img.src = getSrcFromElement(findMatchedMedia());
+        this.currentSrc = img.src;
         window.addEventListener('resize', function (e) {
             img.src = getSrcFromElement(findMatchedMedia());
         });
