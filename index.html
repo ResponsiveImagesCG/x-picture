@@ -50,14 +50,15 @@
         &lt;source srcset="http://www.fillmurray.com/700/600 1x, 
                         http://www.fillmurray.com/1400/1200 2x" 
                         media="(min-width:700px)" /&gt;
-        &lt;p&gt;Content to show if polymer fails.&lt;/p&gt;
+        &lt;img src="http://www.placecage.com/c/800/800" alt="Nic Cage" lazyload&gt;
+        &lt;p&gt;Paradoxally, I am invisible AND accessible.&lt;/p&gt;
 
     &lt;/x-picture&gt;
         </code></pre>
 
         <p><code>&lt;source&gt;</code>'s are source order dependent with the last match winning. This is done to follow the cascading nature of CSS and to encourage a mobile (content) first approach.</p>
         <aside class="caution">
-            <p>Fallback images inside the x-picture tag will always be downloaded even if it is not displayed. Currently there isn't a good way to prevent this.</p>
+            <p>Fallback images inside the x-picture tag will currently always download even if it is not displayed. In a native implementation of &lt;picture&gt;, the "lazyload" attribute is to defer the start of download until the UA can detect that the &lt;img&gt; is a child of &lt;picture&gt;. At present there is not a good way to delay the start of download for a properly formatted &lt;img&gt; element as fallback.</p>
         </aside>
 
         <figure>
@@ -72,7 +73,7 @@
                                 http://www.fillmurray.com/1200/1200 2x" media="(min-width:600px)" />
                 <source srcset="http://www.fillmurray.com/700/600 1x, 
                                 http://www.fillmurray.com/1400/1200 2x" media="(min-width:700px)" />
-
+                <img src="http://www.placecage.com/c/800/800" alt="Nic Cage" lazyload />
                 <p>Content to show if polymer fails.</p>
             </x-picture>
             <figcaption>

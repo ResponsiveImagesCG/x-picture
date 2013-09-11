@@ -2,7 +2,27 @@
 <polymer-element name="x-picture" attributes="src srcset title alt currentSrc media">
   <template>
     <style>
-      img { max-width: 100%; }
+
+      x-picture {
+        text-align: center;
+        object-fit: contain;
+        object-position: center;
+      }
+
+      x-picture:before, x-picture > img  {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      x-picture:before {
+        content: '';
+        height: 100%;
+        margin-right: -0.25em; /* Adjusts for spacing */
+      }
+
+      x-picture > img {
+        max-width: 100%;
+        max-height: 100%;
+      }
     </style>
     <content select="source"></content>
     <img src="{{ src }}" id="the" />

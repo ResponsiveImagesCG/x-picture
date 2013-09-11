@@ -7,6 +7,8 @@
     created: function () {
         var sources, img, findMatchedMedia, getDensity, getSrcFromElement, xPicture;
 
+        this.currentSrc = '';
+        this.media = '';
         sources = this.getElementsByTagName('source');
         img = this.$.the;
 
@@ -15,12 +17,8 @@
         getSrcFromElement = function (el) {
             var deviceRatio, src, srcs, srcset, imgDPR, min = 1, max = 1;
             if (el) {
-                // src wins if it exists
-                if (el.src) {
-                    return el.src;
-
-                // next check srcset
-                } else if (srcset = el.getAttribute('srcset')) {
+                // srcset wins if it exists
+                if (srcset = el.getAttribute('srcset')) {
                     // next prefer srcset, parsed for pixel density
 
                     /*
@@ -60,6 +58,10 @@
                     } else if (deviceRatio < min[1]) {
                         return min[0];
                     }
+                } else if (el.src) {
+                    return el.src;
+
+                // next check srcset
                 } else {
 
                     // If there is no src or srcset on the element, no vaild url can exist
@@ -71,8 +73,8 @@
         findMatchedMedia = function () {
             var source, i, len, media, mediaLess;
 
-            // Check for media on the x-picture element itself first.
-            if (window.matchMedia && window.matchMedia(xPicture.media).matches) {
+            // Check for srcset, src or media on the x-picture element itself first.
+            if (xPicture.srcset || xPicture.src) {
                 return xPicture;
             }
 
@@ -85,15 +87,16 @@
 
             // Backwards to return as early as possible on last source order match.
             for (i = sources.length-1; i >= 0; i-- ) {
-              source = sources[i];
-              media = source.getAttribute('media');
+                source = sources[i];
+                media = source.getAttribute('media');
                 if (window.matchMedia && window.matchMedia(media).matches) {
-                  return source;
+                    xPicture.media = media;
+                    return source;
                 } else if (!media) {
-                  // If no media matches, then the last source with no media attr wins,
-                  // We can't break as there may be a media match up stream which always
-                  // wins over no media so don't overwrite the first medialess source.
-                  mediaLess = mediaLess || source;
+                    // If no media matches, then the last source with no media attr wins,
+                    // We can't break as there may be a media match up stream which always
+                    // wins over no media so don't overwrite the first medialess source.
+                    mediaLess = mediaLess || source;
                 }
             }
             return mediaLess;
