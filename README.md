@@ -18,7 +18,11 @@ A Polymer implementation of the proposed [&lt;picture&gt;](http://picture.respon
         <source srcset="http://www.fillmurray.com/700/600 1x, 
                         http://www.fillmurray.com/1400/1200 2x" 
                         media="(min-width:700px)" />
-        <img src="http://www.placecage.com/c/800/800" alt="Nic Cage" lazyload>
+        <!-- This is a fallback for no javascript, not a fallback for no <picture /> support. 
+        That's what the prollyfill does ;) -->
+        <noscript>
+            <img src="http://www.placecage.com/c/800/800" alt="Nic Cage" lazyload>
+        </noscript>
         <p>Paradoxally, I am invisible AND accessible.</p>
 </x-picture>
 ```
