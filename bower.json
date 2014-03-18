@@ -4,5 +4,8 @@
   "dependencies": {
     "polymer": "latest",
     "highlightjs": "~7.3.0"
-  }
+  },
+  "keywords": [
+    "web-components"
+  ]
 }
